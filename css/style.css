@@ -49,7 +49,7 @@ i {
 .now-playing {
 	justify-content: center;
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 1.8rem;
+	font-size: 1.1rem;
 }
 
 .responsive-img {
@@ -70,12 +70,18 @@ i {
 	width: 100%;
 }
 
-
-.playlist {
+.playlist-item {
+    font-family: 'Arial', sans-serif; 
+    font-size: 18px; 
+    font-weight: bold; 
+    color: #111; 
+}
+.playlist {	
   display: flex; /* Använd flexbox för att ordna låtar */
   flex-direction: column; /* Placera låtar vertikalt */
   align-items: center; /* Centrera innehållet horisontellt */
   background-color: lightgray;
+  margin-right: 10px;
 }
 .song-image {
   width: 80px; /* Förminska bilden till 50 pixlar i bredd (justera efter behov) */
@@ -85,7 +91,8 @@ i {
 .song-item-fade {
   display: flex; /* Använd flexbox för att placera bild och text på samma rad */
   align-items: center; /* Vertikal centrering av bilden och texten */
-  margin-bottom: 10px; /* Lägg till avstånd mellan låtar */
+  margin-bottom: 10px;
+  margin-right: 10px;
   border: 2px solid #ccc; /* Lägg till en ram runt varje låt */
   padding: 10px; /* Lägg till lite padding inuti ramen */
   border-radius: 5px; /* Rundade hörn på ramen */
@@ -99,6 +106,7 @@ i {
   padding: 10px; /* Lägg till lite padding inuti ramen */
   border-radius: 5px; /* Rundade hörn på ramen */
   width: 300px; /* Sätt en bredd för låt-item */
+  margin-right: 10px;
 }
 .song-item-weapon {
   display: flex; /* Använd flexbox för att placera bild och text på samma rad */
@@ -108,6 +116,7 @@ i {
   padding: 10px; /* Lägg till lite padding inuti ramen */
   border-radius: 5px; /* Rundade hörn på ramen */
   width: 300px; /* Sätt en bredd för låt-item */
+  margin-right: 10px;
 }
 .song-item-mortals {
   display: flex; /* Använd flexbox för att placera bild och text på samma rad */
@@ -116,7 +125,9 @@ i {
   border: 2px solid #ccc; /* Lägg till en ram runt varje låt */
   padding: 10px; /* Lägg till lite padding inuti ramen */
   border-radius: 5px; /* Rundade hörn på ramen */
-  width: 300px; /* Sätt en bredd för låt-item */
+  width: 300px;
+  margin-right: 10px;
+  /* Sätt en bredd för låt-item */
 }
 .song-item-blank {
   display: flex; /* Använd flexbox för att placera bild och text på samma rad */
@@ -124,16 +135,22 @@ i {
   margin-bottom: 10px; /* Lägg till avstånd mellan låtar */
   border: 2px solid #ccc; /* Lägg till en ram runt varje låt */
   padding: 10px; /* Lägg till lite padding inuti ramen */
-  border-radius: 5px; /* Rundade hörn på ramen */
-  width: 300px; /* Sätt en bredd för låt-item */
+  border-radius: 5px;
+  width: 300px;
+  margin-right: 10px;  
+
 }
 .song-info {
   display: flex; /* Flexbox för att placera titeln och artistnamnet vertikalt */
   flex-direction: column; /* Gör så att elementen staplas vertikalt */
 }
 .song-title {
+	font-family: 'Arial', sans-serif;
+	font-size: 28px; 
   font-weight: bold; /* Gör låttiteln fetstil */
 }
 .artist-name {
+	font-family: 'Arial', sans-serif;
+  font-size: 20px; 
   color: gray; /* Ändra färgen på artistnamnet */
 }

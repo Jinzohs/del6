@@ -1,329 +1,235 @@
-
+const songList = [
+    { name: "Fade", artist: "Alan Walker", imageSrc: "bild1.jpg", soundSrc: "Alan Walker - Fade.mp3" },
+    { name: "Ark", artist: "Ship Wrek", imageSrc: "bild2.jpg", soundSrc: "NCS - Ark.mp3" },
+    { name: "Weapon", artist: "M4SONIC", imageSrc: "bild3.jpg", soundSrc: "M4SONIC - Weapon.mp3" },
+    { name: "Mortals", artist: "Warriyo", imageSrc: "bild4.jpg", soundSrc: "Warriyo - Mortals.mp3" },
+    { name: "Blank", artist: "Disfigure", imageSrc: "bild5.jpg", soundSrc: "Disfigure - Blank.mp3" },
+];
 
 
 let currentSong = 0;
-let shuffle = 0;
-let repeat = 0;
-const songList = [
-    {
-        name: "Fade",
-        artist: "Alan Walker",
-        imageSrc: "bild1.jpg",
-        soundSrc: "Alan Walker - Fade.mp3"
-    },
-    {
-        name: "Ark",
-        artist: "Ship Wrek",
-        imageSrc: "bild2.jpg",
-        soundSrc: "NCS - Ark.mp3"
-    },
-    {
-        name: "Weapon",
-        artist: "M4SONIC",
-        imageSrc: "bild3.jpg",
-        soundSrc: "M4SONIC - Weapon.mp3"
-    },
-	    {
-        name: "Mortals",
-        artist: "Warriyo",
-        imageSrc: "bild4.jpg",
-        soundSrc: "Warriyo - Mortals.mp3"
-    },
-	    {
-        name: "Blank",
-        artist: "Disfigure",
-        imageSrc: "bild5.jpg",
-        soundSrc: "Disfigure - Blank.mp3"
-    },
-];
-
+let shuffle = 0; // Shuffle status (0: off, 1: on)
+let repeat = 0;  // Repeat status (0: off, 1: on)
 let audio = null;
-let isPlaying = false; 
+let isPlaying = false;
+
+// DOM elements for volume control, time display, and progress bar
 const volumeControl = document.getElementById("volume-control");
+const timerDisplay = document.getElementById("timer-now");
+const progressBar = document.getElementById("progress-bar");
 
+// Function to set up and play the selected song
+function beforeSong(index) {
+    // Pause and reset the current song if one is playing
+    if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+    }
+    audio = null;
 
-//ändra bild, låtnamn och spela upp vald låt
-function beforeSong(i)
-{
+    // Update album cover
+    const albumCover = document.getElementById("album-cover");
+    albumCover.src = songList[index].imageSrc;
 
-if(isPlaying){
-	audio.pause();
-	isPlaying = false; 
-}
-audio = null;
- togglePlayPause(i);
- const albumCover = document.getElementById("album-cover");
- const firstSongImage = songList[i].imageSrc;
- albumCover.src = firstSongImage;
- 
+    // Update artist and song name
     const songInfo = document.querySelector(".playlist-item");
-    const songArtist = songList[i].artist;
-    const songName = songList[i].name;
+    songInfo.innerText = `${songList[index].artist} - ${songList[index].name}`;
 
+    // Highlight the currently selected song in the playlist
+    highlightCurrentSong(index);
 
-    songInfo.innerText = `${songArtist} - ${songName}`;
-	
-	//för att få border tjockare på vald song
-    if (i == 0) {
-
-        document.getElementById("song-item-fade").style.border = "5px solid #999";
-		document.getElementById("song-item-ark").style.border = "2px solid #ccc";
-		document.getElementById("song-item-weapon").style.border = "2px solid #ccc";
-		document.getElementById("song-item-mortals").style.border = "2px solid #ccc";
-		document.getElementById("song-item-blank").style.border = "2px solid #ccc";
-		document.getElementById("timer-total").innerText = "4:20";
-		currentSong = 0;
-    }
-	
-	    if (i == 1) {
-
-        document.getElementById("song-item-fade").style.border = "2px solid #ccc";
-		document.getElementById("song-item-ark").style.border = "5px solid #999";
-		document.getElementById("song-item-weapon").style.border = "2px solid #ccc";
-		document.getElementById("song-item-mortals").style.border = "2px solid #ccc";
-		document.getElementById("song-item-blank").style.border = "2px solid #ccc";
-		document.getElementById("timer-total").innerText = "2:58";
-		currentSong = 1;
-    }
-	    if (i == 2) {
-
-        document.getElementById("song-item-fade").style.border = "2px solid #ccc";
-		document.getElementById("song-item-ark").style.border = "2px solid #ccc";
-		document.getElementById("song-item-weapon").style.border = "5px solid #999";
-		document.getElementById("song-item-mortals").style.border = "2px solid #ccc";
-		document.getElementById("song-item-blank").style.border = "2px solid #ccc";
-		document.getElementById("timer-total").innerText = "3:55";
-		currentSong = 2;
-    }
-	    if (i == 3) {
-
-        document.getElementById("song-item-fade").style.border = "2px solid #ccc";
-		document.getElementById("song-item-ark").style.border = "2px solid #ccc";
-		document.getElementById("song-item-weapon").style.border = "2px solid #ccc";
-		document.getElementById("song-item-mortals").style.border = "5px solid #999";
-		document.getElementById("song-item-blank").style.border = "2px solid #ccc";
-		document.getElementById("timer-total").innerText = "3:50";
-		currentSong = 3;
-    }
-	    if (i == 4) {
-
-        document.getElementById("song-item-fade").style.border = "2px solid #ccc";
-		document.getElementById("song-item-ark").style.border = "2px solid #ccc";
-		document.getElementById("song-item-weapon").style.border = "2px solid #ccc";
-		document.getElementById("song-item-mortals").style.border = "2px solid #ccc";
-		document.getElementById("song-item-blank").style.border = "5px solid #999";
-		document.getElementById("timer-total").innerText = "3:29";
-		currentSong = 4;
-    }
-
-
+    // Play the selected song
+    togglePlayPause(index);
 }
 
-//pause och play knappen
-function togglePlayPause(index) {
-	
+// Function to highlight the selected song in the playlist and update the total duration
+function highlightCurrentSong(index) {
+    const songItems = [
+        "song-item-fade", "song-item-ark", "song-item-weapon", 
+        "song-item-mortals", "song-item-blank"
+    ];
 
+    // Reset borders for all songs, and highlight the selected one
+    songItems.forEach((id, i) => {
+        document.getElementById(id).style.border = (i === index) ? "5px solid #999" : "2px solid #ccc";
+    });
+
+    // Set the total time of the song
+    const songDurations = ["4:20", "2:58", "3:55", "3:50", "3:29"];
+    document.getElementById("timer-total").innerText = songDurations[index];
+
+    currentSong = index; // Set the current song index
+}
+
+// Play/Pause function
+function togglePlayPause(index) {
     if (!audio) {
-      
         const song = songList[index];
-        audio = new Audio(song.soundSrc);
-		audio.volume = volumeControl.value;
-	
-		        audio.addEventListener('ended', () => {
-            nextSongShuffle();			// Gå till nästa låt när den nuvarande låten är slut
-        });
+        audio = new Audio(song.soundSrc);  
+        audio.volume = volumeControl.value; 
+
+        // When the song ends, move to the next song 
+        audio.addEventListener('ended', nextSongShuffle);
+
+        // Set the max value of the progress bar to the song's duration
         audio.addEventListener('loadedmetadata', () => {
-            progressBar.max = audio.duration; // Sätt max till låtens längd
+            progressBar.max = audio.duration;
         });
-        // Uppdatera reglaget varje sekund
+
+        // Update the progress bar as the song plays
         setInterval(() => {
-            if (!audio.paused) { // Kontrollera om ljudet spelas
-                progressBar.value = audio.currentTime; // Ställ in reglets värde till currentTime
+            if (!audio.paused) {
+                progressBar.value = audio.currentTime;
             }
         }, 1000);
     }
-    
+
+    // Toggle between play and pause
     if (isPlaying) {
-        
         audio.pause();
         isPlaying = false;
-
-		//ändra knappen till play
-        const playButton = document.getElementById("playButton");
-        playButton.className = "fa-solid fa-play"; 
+        updatePlayButton("fa-solid fa-play");
     } else {
-
         audio.play();
         isPlaying = true;
-
-		//ändra knappen till pause
-        const playButton = document.getElementById("playButton");
-        playButton.className = "fa-solid fa-pause";  
+        updatePlayButton("fa-solid fa-pause");
     }
-
-	
 }
+
+// Function to update the play/pause button icon
+function updatePlayButton(iconClass) {
+    const playButton = document.getElementById("playButton");
+    playButton.className = iconClass;
+}
+
+// Volume control functionality (also updates volume icon)
 volumeControl.addEventListener('input', (event) => {
     if (audio) {
-		audio.muted = false;
-        audio.volume = event.target.value; // Ställ in ljudvolymen till reglets aktuella värde
+        audio.muted = false;
+        audio.volume = event.target.value;
     }
-	if (audio.volume === 0) {
-		var muteIcon = document.getElementById("muteVolume");
-			muteIcon.classList.remove('fa-volume-high'); 
-    muteIcon.classList.add('fa-volume-xmark');
-	}
-		if (audio.volume < 0.5 && audio.volume > 0 ) {
-		var muteIcon = document.getElementById("muteVolume");
-			muteIcon.classList.remove('fa-volume-xmark'); 
-			muteIcon.classList.remove('fa-volume-high'); 
-			muteIcon.classList.add('fa-volume-low');
-	}
-			if (audio.volume > 0.5) {
-		var muteIcon = document.getElementById("muteVolume");
-			muteIcon.classList.remove('fa-volume-xmark'); 
-			muteIcon.classList.remove('fa-volume-low'); 			
-			muteIcon.classList.add('fa-volume-high');
-	}	
+    updateVolumeIcon(audio.volume);
 });
 
-
-function showPlaylistt()
-{
-
-//visa spellistan
-    document.getElementById("playlist").style.display = "flex";
-	document.getElementById("playlisthoworhide").onclick = hidePlaylist;
-	document.getElementById("playlisthoworhide").innerText = "Hide playlist";
-	
-
-}
-function hidePlaylist()
-{
-	//dölj spellistan
-document.getElementById("playlist").style.display = "none";	
-	document.getElementById("playlisthoworhide").onclick = showPlaylistt;
-	document.getElementById("playlisthoworhide").innerText = "Show playlist";
-	console.log(audio);
-}
-//stoppknappen
-function stopSong(){
-	currentSong = 0;
-	console.log("stop");
-	beforeSong(currentSong);
-	audio.pause();
-	const playButton = document.getElementById("playButton");
-    playButton.className = "fa-solid fa-play";
-}
-
-function audioMute()
-{
-	var muteIcon = document.getElementById("muteVolume");
-	if (audio.muted === false){
-	audio.muted = true;
-	muteIcon.classList.remove('fa-volume-high'); 
-    muteIcon.classList.add('fa-volume-xmark');
-	}
-	
-	else {
-	audio.muted = false;
-	muteIcon.classList.remove('fa-volume-xmark'); 
-    muteIcon.classList.add('fa-volume-high');
-	}
-	
-	console.log(audio.muted);
-};
-
-    const timerDisplay = document.getElementById("timer-now");
-	 const progressBar = document.getElementById("progress-bar");
-
-    // Funktion för att formatera tiden
-    function formatTime(seconds) {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = Math.floor(seconds % 60);
-        return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+// Function to update the volume icon based on volume level
+function updateVolumeIcon(volume) {
+    const muteIcon = document.getElementById("muteVolume");
+    if (volume === 0) {
+        muteIcon.classList.remove('fa-volume-high', 'fa-volume-low');
+        muteIcon.classList.add('fa-volume-xmark');
+    } else if (volume < 0.5) {
+        muteIcon.classList.remove('fa-volume-xmark', 'fa-volume-high');
+        muteIcon.classList.add('fa-volume-low');
+    } else {
+        muteIcon.classList.remove('fa-volume-xmark', 'fa-volume-low');
+        muteIcon.classList.add('fa-volume-high');
     }
-
-    // Uppdatera timern varje sekund
-    setInterval(() => {
-        if (audio && !audio.paused) { // Kontrollera om ljudet spelas
-            timerDisplay.innerText = formatTime(audio.currentTime); // Uppdatera texten med currentTime
-        }
-    },1000);
-	
-function nextSong() 
-{
-
-  currentSong++
-  if (currentSong > 4){
-	  currentSong = 0;
-	
-  }
-  beforeSong(currentSong);
-  
 }
-function prevSong()
-{
-	  currentSong--;
-	  console.log(currentSong);
-  if (currentSong < 0){
-	  currentSong = 4;
-	
-  }
-  beforeSong(currentSong);
-   console.log(currentSong);
+
+// Show/Hide playlist button
+function showPlaylist() {
+    document.getElementById("playlist").style.display = "flex";
+    document.getElementById("playlisthoworhide").onclick = hidePlaylist;
+    document.getElementById("playlisthoworhide").innerText = "Hide playlist";
 }
+
+function hidePlaylist() {
+    document.getElementById("playlist").style.display = "none";
+    document.getElementById("playlisthoworhide").onclick = showPlaylist;
+    document.getElementById("playlisthoworhide").innerText = "Show playlist";
+}
+
+// Stop button
+function stopSong() {
+    currentSong = 0;
+    beforeSong(currentSong);
+    audio.pause();
+    updatePlayButton("fa-solid fa-play");
+}
+
+// Mute/Unmute button
+function audioMute() {
+    const muteIcon = document.getElementById("muteVolume");
+    if (audio.muted) {
+        audio.muted = false;
+        updateVolumeIcon(audio.volume);
+    } else {
+        audio.muted = true;
+        muteIcon.classList.remove('fa-volume-high', 'fa-volume-low');
+        muteIcon.classList.add('fa-volume-xmark');
+    }
+}
+
+// Timer display, updating every second
+setInterval(() => {
+    if (audio && !audio.paused) {
+        timerDisplay.innerText = formatTime(audio.currentTime);
+    }
+}, 1000);
+
+// Format time from seconds to mm:ss
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+}
+
+// Function to handle progress bar input and update current song time
+progressBar.addEventListener('input', (event) => {
+    if (audio) {
+        setAudioCurrentTime(event.target.value);
+    }
+});
+
 function setAudioCurrentTime(value) {
-    audio.currentTime = value; // Ställ in ljudets currentTime till reglets värde
-}
-function shuffleSong()
-{
-	if (shuffle === 0) {
-	shuffle = 1;
-	repeat = 0;
-	document.getElementById("repeatIcon").style.color = "#000";
-	document.getElementById("shuffleIcon").style.color = "#999";
-	}
-	else {
-		shuffle = 0;
-	document.getElementById("shuffleIcon").style.color = "#000";	
-	}
-	
+    audio.currentTime = value;
 }
 
-function repeatSong(){
-		if (repeat === 0) {
-	repeat = 1;
-	shuffle = 0;
-	document.getElementById("shuffleIcon").style.color = "#000";	
-	document.getElementById("repeatIcon").style.color = "#999";
-	}
-	else {
-		repeat = 0;
-	document.getElementById("repeatIcon").style.color = "#000";	
-	}
-	
-}
-function nextSongShuffle()  {
-
-	if (repeat === 1)
-	{
-		console.log("repeating song")
-		beforeSong(currentSong);
-	}
-    else {
+// Function to move to the next song, checks for shuffle or repeat
+function nextSong() {
     if (shuffle === 1) {
         let randomSong;
-
-   
         do {
-            randomSong = Math.floor(Math.random() * 5); 
-        } while (randomSong === currentSong); 
-
-        console.log("Shuffle to song nr", randomSong);
-        beforeSong(randomSong); 
+            randomSong = Math.floor(Math.random() * songList.length);
+        } while (randomSong === currentSong);
+        beforeSong(randomSong);
     } else {
-        nextSong(); 
+        currentSong = (currentSong + 1) % songList.length; // Loop to first song if at the end
+        beforeSong(currentSong);
     }
-	}
+}
+
+// Previous song button
+function prevSong() {
+    currentSong = (currentSong - 1 + songList.length) % songList.length; // Loop to last song if at the beginning
+    beforeSong(currentSong);
+}
+
+// Changes the color of shuffle button and value if activated
+function shuffleSong() {
+    shuffle = 1 - shuffle; // Toggle shuffle
+    document.getElementById("shuffleIcon").style.color = shuffle ? "#999" : "#000";
+    if (shuffle) {
+        repeat = 0; // Disable repeat when shuffle is on
+        document.getElementById("repeatIcon").style.color = "#000";
+    }
+}
+
+// Changes the color of repeat button and value if activated
+function repeatSong() {
+    repeat = 1 - repeat; // Toggle repeat
+    document.getElementById("repeatIcon").style.color = repeat ? "#999" : "#000";
+    if (repeat) {
+        shuffle = 0; // Disable shuffle when repeat is on
+        document.getElementById("shuffleIcon").style.color = "#000";
+    }
+}
+
+// Function to decide what to do with next song (shuffle/repeat checked)
+function nextSongShuffle() {
+    if (repeat === 1) {
+        beforeSong(currentSong); // Repeat the same song
+    } else {
+        nextSong(); // Proceed to the next song
+    }
 }

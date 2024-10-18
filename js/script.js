@@ -201,8 +201,13 @@ function nextSong() {
 
 // Previous song button
 function prevSong() {
+	if(repeat === 0){
     currentSong = (currentSong - 1 + songList.length) % songList.length; // Loop to last song if at the beginning
     beforeSong(currentSong);
+	}
+	else{
+		beforeSong(currentSong);
+	}
 }
 
 // Changes the color of shuffle button and value if activated
